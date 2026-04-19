@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Houmti</title>
+  <style>
+    body {
+      font-family: 'Helvetica', Arial, sans-serif;
+      background-color: #f9fafb;
+      margin: 0;
+      padding: 0;
+      color: #333333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+    .header {
+      background-color: #0052cc;
+      color: #ffffff;
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .body {
+      padding: 30px 20px;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    .code {
+      text-align: center;
+      margin: 25px 0;
+      font-size: 32px;
+      font-weight: bold;
+      letter-spacing: 6px;
+      color: #0052cc;
+      background-color: #e6f0ff;
+      padding: 15px 25px;
+      border-radius: 8px;
+      display: inline-block;
+    }
+    .footer {
+      font-size: 13px;
+      color: #888888;
+      text-align: center;
+      padding: 20px;
+    }
+    .footer a {
+      color: #0052cc;
+      text-decoration: none;
+    }
+    p {
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      Welcome to Houmti!
+    </div>
+    <div class="body">
+      <p>Hello {{ name }},</p>
+      <p>Thank you for joining Houmti! We’re thrilled to have you on board and can’t wait for you to explore all the features that make your experience smooth and enjoyable.</p>
+      <p>To get started, please enter the code below in the Houmti app to verify your account:</p>
+      <div class="code">{{ code }}</div>
+      <p>Once verified, you’ll be able to:</p>
+      <ul>
+        <li>Access your personal dashboard</li>
+        <li>Connect with your favorite services</li>
+        <li>Receive updates and tips to make the most of Houmti</li>
+      </ul>
+      <p>If you didn’t sign up for Houmti, simply ignore this message — your account won’t be activated.</p>
+      <p>We’re excited to have you with us!</p>
+      <p>Warm regards,<br>The Houmti Team</p>
+    </div>
+    <div class="footer">
+      Houmti App – Your smart companion<br>
+      <a href="https://houmti.app">houmti.app</a>
+    </div>
+  </div>
+</body>
+</html>

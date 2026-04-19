@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reset Your Password - Houmti</title>
+  <style>
+    body {
+      font-family: 'Helvetica', Arial, sans-serif;
+      background-color: #f9fafb;
+      margin: 0;
+      padding: 0;
+      color: #333333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+    .header {
+      background-color: #0052cc;
+      color: #ffffff;
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 26px;
+      font-weight: bold;
+    }
+    .body {
+      padding: 30px 20px;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    .code-container {
+      text-align: center;
+      margin: 30px 0;
+    }
+    .code {
+      font-size: 34px;
+      font-weight: bold;
+      letter-spacing: 8px;
+      color: #0052cc;
+      background-color: #e6f0ff;
+      padding: 15px 25px;
+      border-radius: 10px;
+      display: inline-block;
+    }
+    .warning {
+      margin-top: 25px;
+      padding: 15px;
+      background-color: #fff4e5;
+      border-left: 4px solid #ffa726;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #8a6d3b;
+    }
+    .footer {
+      font-size: 13px;
+      color: #888888;
+      text-align: center;
+      padding: 20px;
+    }
+    .footer a {
+      color: #0052cc;
+      text-decoration: none;
+    }
+    p {
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+```
+<div class="header">
+  Password Reset Request
+</div>
+
+<div class="body">
+  <p>Hello {{ name }},</p>
+
+  <p>We received a request to reset your Houmti account password.</p>
+
+  <p>Use the verification code below to proceed:</p>
+
+  <div class="code-container">
+    <div class="code">{{ code }}</div>
+  </div>
+
+  <p>This code is valid for <strong>10 minutes</strong>.</p>
+
+  <div class="warning">
+    If you didn’t request this password reset, you can safely ignore this email. Your account will remain secure.
+  </div>
+
+  <p>For security reasons, never share this code with anyone.</p>
+
+  <p>Best regards,<br>The Houmti Team</p>
+</div>
+
+<div class="footer">
+  Houmti App – Your smart companion<br>
+  <a href="https://houmti.app">houmti.app</a>
+</div>
+```
+
+  </div>
+</body>
+</html>
