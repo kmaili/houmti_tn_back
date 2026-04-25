@@ -1,4 +1,5 @@
 from django.urls import path
+from interactions.views import ArtisanReviewListView
 from .views import ArtisanSearch, ClientRegisterView, ArtistRegisterView, Favorites, UserDetailView, UserNotificationView, VerifyOTPView
 
 urlpatterns = [
@@ -12,4 +13,5 @@ urlpatterns = [
     path('artisans/<int:pk>', UserDetailView.as_view(), name='artisan_details'),
     path('artisans/search', ArtisanSearch.as_view(), name='search_artisans'),
     path('artisans/favorites', Favorites.as_view(), name='favorites_artisans'),
+    path('artisans/<int:artist_id>/reviews', ArtisanReviewListView.as_view(), name='artisan_reviews'),
 ]

@@ -45,5 +45,5 @@ class Review(models.Model):
     booking = models.OneToOneField(Booking, on_delete=models.CASCADE, related_name='review')
     artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name='reviews')
     nb_stars = models.PositiveSmallIntegerField()
-    comment = models.TextField()
+    comment = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.core.validators import RegexValidator
 from django.db import transaction
+from django.db.models import Avg
 from core.models import Image
 from core.serializers import ImageSerializer
 from districts.models import District
@@ -90,6 +91,7 @@ class ArtistUserSerializer(BaseUserSerializer):
     portfolio = PortfolioSerializer(read_only=True)
     service = ServiceSerializer(read_only=True)
     is_favorite = serializers.SerializerMethodField()
+    rate_average = serializers.SerializerMethodField()
 
     def get_user_type(self, obj):
         return "artisan"
@@ -102,9 +104,13 @@ class ArtistUserSerializer(BaseUserSerializer):
             return False
         return client.favorites.filter(artisan=obj).exists()
 
+    def get_rate_average(self, obj):
+        avg = obj.reviews.aggregate(Avg('nb_stars'))['nb_stars__avg']
+        return avg if avg is not None else 0.0
+
 
     class Meta(BaseUserSerializer.Meta):
-        fields = BaseUserSerializer.Meta.fields + ['portfolio', 'service', 'is_favorite']
+        fields = BaseUserSerializer.Meta.fields + ['portfolio', 'service', 'is_favorite', 'rate_average']
 
 class VerifyOTPSerializer(serializers.Serializer):
     email = serializers.EmailField()

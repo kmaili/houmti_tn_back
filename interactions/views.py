@@ -5,11 +5,61 @@ from rest_framework import status
 from rest_framework import permissions
 from rest_framework.parsers import MultiPartParser, FormParser
 from core.permissions import IsArtistan, IsClient
-from interactions.models import Booking, Discussion, HistoEtatBooking, Message
+from interactions.models import Booking, Discussion, HistoEtatBooking, Message, Review
 from interactions.paginator import DiscussionPagination
-from interactions.serializers import BookingSerializer, CreateMessageSerializer, DiscussionListSerializer, JobActionSerializer, MessageSerializer
+from interactions.serializers import BookingSerializer, CreateMessageSerializer, DiscussionListSerializer, JobActionSerializer, MessageSerializer, ReviewSerializer
 from django.db.models import Q, OuterRef, Subquery
 from django.shortcuts import get_object_or_404
+
+class ReviewView(APIView):
+    permission_classes = [IsClient]
+
+    @extend_schema(
+        request=ReviewSerializer,
+        responses={201: ReviewSerializer},
+        description="Allows a client to rate an artisan for a completed booking."
+    )
+    def post(self, request, *args, **kwargs):
+        serializer = ReviewSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        review = serializer.save()
+        return Response(ReviewSerializer(review).data, status=status.HTTP_201_CREATED)
+
+class ReviewDetailView(APIView):
+    permission_classes = [IsClient]
+
+    @extend_schema(
+        request=ReviewSerializer,
+        responses={200: ReviewSerializer},
+        description="Allows a client to update their review."
+    )
+    def patch(self, request, pk, *args, **kwargs):
+        review = get_object_or_404(Review, pk=pk, booking__client=request.user.client)
+        serializer = ReviewSerializer(review, data=request.data, partial=True, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    @extend_schema(
+        responses={204: None},
+        description="Allows a client to delete their review."
+    )
+    def delete(self, request, pk, *args, **kwargs):
+        review = get_object_or_404(Review, pk=pk, booking__client=request.user.client)
+        review.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ArtisanReviewListView(ListAPIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = ReviewSerializer
+
+    @extend_schema(
+        description="Retrieves all reviews for a specific artisan.",
+        responses={200: ReviewSerializer(many=True)}
+    )
+    def get_queryset(self):
+        artist_id = self.kwargs.get('artist_id')
+        return Review.objects.filter(artist_id=artist_id).order_by('-created_at')
 
 class BookingView(APIView):
     permission_classes = [IsClient]
@@ -186,8 +236,13 @@ class JobView(APIView):
             status=status.HTTP_200_OK
         )
 
+@extend_schema(
+    request=CreateMessageSerializer,
+)
 class CreateMessageView(APIView):
-    def post(self, request):
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+    def post(self, request, *args, **kwargs):
         serializer = CreateMessageSerializer(data=request.data, context={"request": request})
 
         if serializer.is_valid():
@@ -207,7 +262,7 @@ class DiscussionMessagesView(ListAPIView):
         discussion_id = self.kwargs["discussion_id"]
         return Message.objects.filter(
             discussion_id=discussion_id
-        ).order_by("sent_at")
+        ).order_by("-sent_at")
 
 
 
@@ -216,9 +271,43 @@ class MyDiscussionsView(ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = DiscussionPagination
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='onlyUserId',
+                location=OpenApiParameter.QUERY,
+                description='If provided and not -1, only discussions with this user will be returned.',
+                type=int,
+                required=False
+            ),
+        ]
+    )
     def get_queryset(self):
         user = self.request.user
+        only_user_id = self.request.query_params.get('onlyUserId')
 
-        return Discussion.objects.filter(
+        queryset = Discussion.objects.filter(
             Q(client=user) | Q(artist=user)
-        ).order_by("-id")
+        )
+
+        if only_user_id and only_user_id != '-1':
+            queryset = queryset.filter(
+                Q(client_id=only_user_id) | Q(artist_id=only_user_id)
+            )
+
+        return queryset.order_by("-id")
+
+class DiscussionReadAllMessages(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, discussion_id, *args, **kwargs):
+        discussion = get_object_or_404(Discussion, id=discussion_id)
+
+        # Check if the user is part of the discussion
+        if request.user.id != discussion.client.id and request.user.id != discussion.artist.id:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Mark all messages as read for this user
+        discussion.messages.filter(~Q(sender_id=request.user.id)).update(viewed_by_receiver=True)
+
+        return Response({"detail": "All messages marked as read."}, status=status.HTTP_200_OK)

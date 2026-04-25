@@ -62,7 +62,9 @@ class Command(BaseCommand):
                     phone_number=fake.phone_number()[:20],
                     password=password,
                     is_active=True,
-                    district=random.choice(districts)
+                    district=random.choice(districts),
+                    coord_x=round(random.uniform(7.52, 11.60), 6),
+                    coord_y=round(random.uniform(30.23, 37.55), 6)
                 )
             )
 
@@ -81,8 +83,8 @@ class Command(BaseCommand):
                     password=password,
                     is_active=True,
                     district=random.choice(districts),
-                    coord_x=float(fake.latitude()),
-                    coord_y=float(fake.longitude())
+                    coord_x=round(random.uniform(7.52, 11.60), 6),
+                    coord_y=round(random.uniform(30.23, 37.55), 6)
                 )
             )
 
